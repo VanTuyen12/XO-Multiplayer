@@ -2,7 +2,7 @@ using System.Net.WebSockets;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class GridManager : MyMonoBehaviour
+public class GridManager : Singleton<GridManager>
 {
     [SerializeField] GameObject _squarePrefab;
     [SerializeField] GameObject _linePrefab;
@@ -45,37 +45,47 @@ public class GridManager : MyMonoBehaviour
             for (int col = 0; col < _cols; col++)
             {
                 GameObject cell = Instantiate(_squarePrefab, transform);
-                
+
                 float posX = col * _actualTileSize;
                 float posY = row * -_actualTileSize;
-                
+
                 cell.transform.localPosition = new Vector2(posX, posY);
                 cell.name = $"square {row}_{col}";
+
+                SetGrid(cell, row, col);
 
                 cell.transform.localScale = GetSquareSize();
             }
         }
     }
-    
+
+    protected void SetGrid(GameObject obj, int row, int col)
+    {
+        var gridPos = obj.GetComponent<GridPosition>();
+        
+            gridPos.SetPosX(row);
+            gridPos.SetPosY(col);
+    }
+
     protected virtual void CreateGridLines()
     {
-       
+
         GameObject linesParent = new GameObject("GridLines");
         linesParent.transform.SetParent(transform);
         linesParent.transform.localPosition = Vector3.zero;
-        
+
         float scaledLineGap = _lineGap * (_actualTileSize / _baseTileSize);
         float gridWidth = _cols * _actualTileSize;
         float gridHeight = _rows * _actualTileSize;
-        
+
         for (int i = 1; i < _cols; i++)
         {
-            float x = (i - 1) * _actualTileSize + _actualTileSize/2;
-            
+            float x = (i - 1) * _actualTileSize + _actualTileSize / 2;
+
             GameObject vLine = Instantiate(_linePrefab, linesParent.transform);
-            vLine.transform.localPosition = new Vector3(x, -gridHeight/2 + _actualTileSize/2, 0);
+            vLine.transform.localPosition = new Vector3(x, -gridHeight / 2 + _actualTileSize / 2, 0);
             vLine.transform.localRotation = Quaternion.Euler(0, 0, 90);
-            
+
             float lineHeight = gridHeight - (scaledLineGap * 2);
             float scaleRatio = _actualTileSize / _baseTileSize;
             vLine.transform.localScale = new Vector3(lineHeight / _baseTileSize, scaleRatio, 1);
