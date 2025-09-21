@@ -1,18 +1,18 @@
 using UnityEditor.Rendering;
 using UnityEngine;
 
-public class GridPosition : MyMonoBehaviour
+public class GridPosition : MyNetWorkMonoBehaviour
 {
     [SerializeField] private int x;
 
     [SerializeField] private int y;
-
     private void OnMouseDown()
     {
         Debug.Log("Click " + gameObject.name);
-        GameManager.Instance.ClickedOnGridPosition(this,x, y);
+        GameManager.Instance.ClickedOnGridPositionRpc(this,x, y);
     }
-
+    
+    
     public void SetPosX(int x)
     {
         this.x = x;

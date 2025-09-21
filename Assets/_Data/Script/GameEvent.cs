@@ -2,7 +2,7 @@ using System;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class GameEvent : MyMonoBehaviour
+public class GameEvent : MyNetWorkMonoBehaviour
 {
 
     public static event EventHandler<OnClickGridPositionEventArgs> OnClickGridPosition;
@@ -10,14 +10,16 @@ public class GameEvent : MyMonoBehaviour
     {
         public int x;
         public int y;
+        public EnumPlayerType playerType;
     }
 
-    public static void ClickedOnGridPosition(object obj,int xPoint , int yPoint )
+    public static void ClickedOnGridPosition(object obj,int xPoint ,int yPoint , EnumPlayerType localPlayerType)
     {
         OnClickGridPosition?.Invoke(obj, new OnClickGridPositionEventArgs
         {
             x = xPoint,
             y = yPoint,
+            playerType = localPlayerType,
         });
     }
 

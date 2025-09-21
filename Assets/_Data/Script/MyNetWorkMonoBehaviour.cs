@@ -1,7 +1,8 @@
 using System;
+using Unity.Netcode;
 using UnityEngine;
 
-public class MyMonoBehaviour : MonoBehaviour
+public class MyNetWorkMonoBehaviour : NetworkBehaviour
 {
     protected virtual void Awake()
     {
