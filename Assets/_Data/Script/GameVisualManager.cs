@@ -38,11 +38,9 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
     private void OnClickOnGridPosition(object sender, GameEvent.OnClickGridPositionEventArgs e)
     {
         Debug.Log("OnClickOnGridPosition");
-        GridPosition gridpos = sender as GridPosition;
-        if (gridpos == null) return;
         
-        Vector3 gridPos = gridpos.transform.position;
-        Vector3 gridScale = gridpos.transform.localScale;
+        Vector3 gridPos = e.vtPos;
+        Vector3 gridScale = e.vtScale;
        
         SpawnPrefabsRpc(gridPos, gridScale, e.playerType);
     }
@@ -65,7 +63,6 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
     {
         switch (playerType)
         {
-            case EnumPlayerType.None:
             default:
                 case EnumPlayerType.Cross :
                     return _crossPrefab;

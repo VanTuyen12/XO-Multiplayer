@@ -7,11 +7,12 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private EnumPlayerType _localPlayerType;
     
     [Rpc(SendTo.Server)]
-    public virtual void ClickedOnGridPositionRpc(object obj, int x, int y)
+    public virtual void ClickedOnGridPositionRpc( Vector3 vtPos, Vector3 vtScale,EnumPlayerType playerType)
     {
-        if (_localPlayerType != _currentPlayerType) return;
+        Debug.Log("ClickedOnGridPositionRpc");
+        if (playerType != _currentPlayerType) return;
         
-        GameEvent.ClickedOnGridPosition(obj, x, y,GetLocalPlayerType());
+        GameEvent.ClickedOnGridPosition(null, vtPos, vtScale,playerType);
         switch (_currentPlayerType)
         {
             default:
@@ -26,6 +27,7 @@ public class GameManager : Singleton<GameManager>
     
     public override void OnNetworkSpawn()
     {
+        Debug.Log(NetworkManager.Singleton.LocalClientId);
         _localPlayerType = NetworkManager.Singleton.LocalClientId == 0 ? EnumPlayerType.Cross : EnumPlayerType.Circle;
 
         if (IsServer)

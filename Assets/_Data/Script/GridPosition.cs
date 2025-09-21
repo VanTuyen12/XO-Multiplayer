@@ -9,9 +9,11 @@ public class GridPosition : MyNetWorkMonoBehaviour
     private void OnMouseDown()
     {
         Debug.Log("Click " + gameObject.name);
-        GameManager.Instance.ClickedOnGridPositionRpc(this,x, y);
+        
+        var gameManager = GameManager.Instance;
+        if (gameManager == null) return;
+        gameManager.ClickedOnGridPositionRpc(transform.position, transform.localScale,gameManager.GetLocalPlayerType());
     }
-    
     
     public void SetPosX(int x)
     {

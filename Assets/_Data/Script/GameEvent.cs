@@ -8,17 +8,17 @@ public class GameEvent : MyNetWorkMonoBehaviour
     public static event EventHandler<OnClickGridPositionEventArgs> OnClickGridPosition;
     public class OnClickGridPositionEventArgs : EventArgs
     {
-        public int x;
-        public int y;
+        public Vector3 vtPos;
+        public Vector3 vtScale;
         public EnumPlayerType playerType;
     }
 
-    public static void ClickedOnGridPosition(object obj,int xPoint ,int yPoint , EnumPlayerType localPlayerType)
+    public static void ClickedOnGridPosition(object obj,Vector3 vtPos ,Vector3 vtScale , EnumPlayerType localPlayerType)
     {
         OnClickGridPosition?.Invoke(obj, new OnClickGridPositionEventArgs
         {
-            x = xPoint,
-            y = yPoint,
+            vtPos = vtPos,
+            vtScale = vtScale,
             playerType = localPlayerType,
         });
     }
