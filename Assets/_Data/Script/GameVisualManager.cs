@@ -9,7 +9,7 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
 {
     [SerializeField] private Transform _crossPrefab;
     [SerializeField] private Transform _circlePrefab;
-    private Transform poolHolder;
+    [SerializeField] private Transform poolHolder;
 
     protected override void Start()
     {

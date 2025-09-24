@@ -6,6 +6,8 @@ public class GameEvent : MyNetWorkMonoBehaviour
 {
 
     public static event EventHandler<OnClickGridPositionEventArgs> OnClickGridPosition;
+    public static event EventHandler OnGameStarted;
+    public static event EventHandler OnCurrentPlayerChanged; 
     public class OnClickGridPositionEventArgs : EventArgs
     {
         public Vector3 vtPos;
@@ -23,5 +25,14 @@ public class GameEvent : MyNetWorkMonoBehaviour
         });
     }
 
+    public static void PlayOnGameStarted(object sender,EventArgs e)
+    {
+        OnGameStarted?.Invoke(sender, e);
+    }
+
+    public static void PlayOnCurrentPlayerChanged(object sender,EventArgs e)
+    {
+        OnCurrentPlayerChanged?.Invoke(sender, e);
+    }
 }
 
