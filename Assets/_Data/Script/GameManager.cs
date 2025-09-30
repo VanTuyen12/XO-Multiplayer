@@ -7,27 +7,35 @@ public class GameManager : Singleton<GameManager>
 {
     [SerializeField] private NetworkVariable<EnumPlayerType> currentPlayerType = new();
     [SerializeField] private EnumPlayerType _localPlayerType;
-    
+    [SerializeField] private EnumPlayerType[,] _playerTypesArray;
+
+    public EnumPlayerType[,] PlayerTypesArray
+    {
+        get => _playerTypesArray;
+        set => _playerTypesArray = value;
+    }
+
     [Rpc(SendTo.Server)]
-    public virtual void ClickedOnGridPositionRpc( Vector3 vtPos, Vector3 vtScale,EnumPlayerType playerType)
+    public virtual void ClickedOnGridPositionRpc(int x, int y, Vector3 vtPos, Vector3 vtScale, EnumPlayerType playerType)
     {
         Debug.Log("ClickedOnGridPositionRpc");
         if (playerType != currentPlayerType.Value) return;
-        
-        GameEvent.ClickedOnGridPosition(null, vtPos, vtScale,playerType);
+        if (_playerTypesArray[x, y] != EnumPlayerType.None) return;
+
+        _playerTypesArray[x, y] = playerType;
+        GameEvent.ClickedOnGridPosition(null, vtPos, vtScale, playerType);
         switch (currentPlayerType.Value)
         {
             default:
-                case EnumPlayerType.Cross:
-                    currentPlayerType.Value = EnumPlayerType.Circle;
-                    break;
-                case EnumPlayerType.Circle:
+            case EnumPlayerType.Cross:
+                currentPlayerType.Value = EnumPlayerType.Circle;
+                break;
+            case EnumPlayerType.Circle:
                 currentPlayerType.Value = EnumPlayerType.Cross;
-                    break;
+                break;
         }
-        
     }
-    
+
     public override void OnNetworkSpawn()
     {
         Debug.Log(NetworkManager.Singleton.LocalClientId);
@@ -38,9 +46,9 @@ public class GameManager : Singleton<GameManager>
             NetworkManager.Singleton.OnClientConnectedCallback += SingletonOnOnClientConnectedCallback;
         }
 
-        currentPlayerType.OnValueChanged += (oldPlayerType, newPlayerType) => 
+        currentPlayerType.OnValueChanged += (oldPlayerType, newPlayerType) =>
         {
-            GameEvent.PlayOnCurrentPlayerChanged(this,EventArgs.Empty);
+            GameEvent.PlayOnCurrentPlayerChanged(this, EventArgs.Empty);
         };
     }
 
@@ -54,16 +62,16 @@ public class GameManager : Singleton<GameManager>
     [Rpc(SendTo.ClientsAndHost)]
     protected virtual void TriggerOnGameStartedRpc()
     {
-        GameEvent.PlayOnGameStarted(this,EventArgs.Empty);
+        GameEvent.PlayOnGameStarted(this, EventArgs.Empty);
     }
+
     public virtual EnumPlayerType GetLocalPlayerType()
     {
         return _localPlayerType;
     }
-    
+
     public virtual EnumPlayerType GetCurrentPlayerType()
     {
         return currentPlayerType.Value;
     }
-    
 }

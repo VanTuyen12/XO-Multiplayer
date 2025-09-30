@@ -6,15 +6,19 @@ public class GridPosition : MyNetWorkMonoBehaviour
     [SerializeField] private int x;
 
     [SerializeField] private int y;
+
+
     private void OnMouseDown()
     {
         Debug.Log("Click " + gameObject.name);
-        
+
         var gameManager = GameManager.Instance;
         if (gameManager == null) return;
-        gameManager.ClickedOnGridPositionRpc(transform.position, transform.localScale,gameManager.GetLocalPlayerType());
+
+        gameManager.ClickedOnGridPositionRpc(x, y, transform.position, transform.localScale,
+            gameManager.GetLocalPlayerType());
     }
-    
+
     public void SetPosX(int x)
     {
         this.x = x;

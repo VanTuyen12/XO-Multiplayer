@@ -15,6 +15,7 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
     {
         base.Start();   
         GameEvent.OnClickGridPosition += OnClickOnGridPosition;
+        
     }
 
     protected override void LoadComponents()

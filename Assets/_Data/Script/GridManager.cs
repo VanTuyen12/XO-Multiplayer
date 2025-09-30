@@ -22,6 +22,7 @@ public class GridManager : Singleton<GridManager>
     {
         base.Start();
         CreateGrid();
+        GameManager.Instance.PlayerTypesArray = new EnumPlayerType[_rows, _cols];
     }
 
     protected virtual void CreateGrid()
