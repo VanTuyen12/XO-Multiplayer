@@ -38,7 +38,7 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
     
     private void OnClickOnGridPosition(object sender, GameEvent.OnClickGridPositionEventArgs e)
     {
-        Debug.Log("OnClickOnGridPosition");
+        //Debug.Log("OnClickOnGridPosition");
         
         Vector3 gridPos = e.vtPos;
         Vector3 gridScale = e.vtScale;
@@ -49,7 +49,7 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
     [Rpc(SendTo.Server)]
     protected virtual void SpawnPrefabsRpc(Vector3 gridPos, Vector3 gridScale,EnumPlayerType playerType )
     {
-        Debug.Log("SpawnObject");
+        //Debug.Log("SpawnObject");
         Transform prefab = SelectPrefab(playerType);
         
         var newPrefab = Instantiate(prefab);

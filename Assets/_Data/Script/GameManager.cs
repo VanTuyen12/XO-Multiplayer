@@ -7,7 +7,11 @@ public class GameManager : Singleton<GameManager>
 {
     [SerializeField] private NetworkVariable<EnumPlayerType> currentPlayerType = new();
     [SerializeField] private EnumPlayerType _localPlayerType;
-    [SerializeField] private EnumPlayerType[,] _playerTypesArray;
+    private EnumPlayerType[,] _playerTypesArray;
+
+    //Game Over
+    [SerializeField] private NetworkVariable<bool> isGameOver = new(false);
+    [SerializeField] private NetworkVariable<EnumPlayerType> winner = new(EnumPlayerType.None);
 
     public EnumPlayerType[,] PlayerTypesArray
     {
@@ -16,14 +20,36 @@ public class GameManager : Singleton<GameManager>
     }
 
     [Rpc(SendTo.Server)]
-    public virtual void ClickedOnGridPositionRpc(int x, int y, Vector3 vtPos, Vector3 vtScale, EnumPlayerType playerType)
+    public virtual void ClickedOnGridPositionRpc(int x, int y, Vector3 vtPos, Vector3 vtScale,
+        EnumPlayerType playerType)
     {
-        Debug.Log("ClickedOnGridPositionRpc");
+        //Debug.Log("ClickedOnGridPositionRpc");
+        if (isGameOver.Value) return;
+
         if (playerType != currentPlayerType.Value) return;
         if (_playerTypesArray[x, y] != EnumPlayerType.None) return;
 
         _playerTypesArray[x, y] = playerType;
         GameEvent.ClickedOnGridPosition(null, vtPos, vtScale, playerType);
+
+        EnumPlayerType winPlayerType = WinChecker.CheckWin(_playerTypesArray, x, y);
+       
+        if (winPlayerType != EnumPlayerType.None)
+        {
+            Debug.Log("WIN OVER" + winPlayerType);
+            isGameOver.Value = true;
+            winner.Value = winPlayerType;
+            return;
+        }
+
+        if (WinChecker.IsBoardFull(_playerTypesArray))
+        {
+            Debug.Log("Full OVER" + winPlayerType);
+            isGameOver.Value = true;
+            winner.Value = EnumPlayerType.None;
+            return;
+        }
+        
         switch (currentPlayerType.Value)
         {
             default:

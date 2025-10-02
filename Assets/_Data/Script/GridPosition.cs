@@ -10,7 +10,7 @@ public class GridPosition : MyNetWorkMonoBehaviour
 
     private void OnMouseDown()
     {
-        Debug.Log("Click " + gameObject.name);
+        //Debug.Log("Click " + gameObject.name);
 
         var gameManager = GameManager.Instance;
         if (gameManager == null) return;
