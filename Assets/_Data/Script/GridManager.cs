@@ -17,7 +17,8 @@ public class GridManager : Singleton<GridManager>
     
     [SerializeField] float _lineGap = 0.1f; 
     [SerializeField] private float _actualTileSize;
-
+    private float _scaleRatio;
+    public float ScaleRatio => _scaleRatio;
     protected override void Start()
     {
         base.Start();
@@ -88,8 +89,8 @@ public class GridManager : Singleton<GridManager>
             vLine.transform.localRotation = Quaternion.Euler(0, 0, 90);
 
             float lineHeight = gridHeight - (scaledLineGap * 2);
-            float scaleRatio = _actualTileSize / _baseTileSize;
-            vLine.transform.localScale = new Vector3(lineHeight / _baseTileSize, scaleRatio, 1);
+            _scaleRatio = _actualTileSize / _baseTileSize;
+            vLine.transform.localScale = new Vector3(lineHeight / _baseTileSize, _scaleRatio, 1);
         }
 
         for (int i = 1; i < _rows; i++)
@@ -101,8 +102,8 @@ public class GridManager : Singleton<GridManager>
             hLine.transform.localRotation = Quaternion.identity;
 
             float lineWidth = gridWidth - (scaledLineGap * 2);
-            float scaleRatio = _actualTileSize / _baseTileSize;
-            hLine.transform.localScale = new Vector3(lineWidth / _baseTileSize, scaleRatio, 1);
+            _scaleRatio = _actualTileSize / _baseTileSize;
+            hLine.transform.localScale = new Vector3(lineWidth / _baseTileSize, _scaleRatio, 1);
         }
     }
     
@@ -138,5 +139,12 @@ public class GridManager : Singleton<GridManager>
     public Vector2 GetSquareSize()
     {
         return Vector3.one * (_actualTileSize/_baseTileSize);
+        
+    }
+
+    public Transform FindCell(int row, int col)
+    {
+        string targetName = $"square {row}_{col}";
+        return GameObject.Find(targetName).transform;
     }
 }

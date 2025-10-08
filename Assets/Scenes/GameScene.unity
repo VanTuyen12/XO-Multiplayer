@@ -809,6 +809,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 310003804}
   m_CullTransparentMesh: 1
+--- !u!1 &311687901
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 311687902}
+  - component: {fileID: 311687903}
+  m_Layer: 0
+  m_Name: PoolHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &311687902
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 311687901}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1762962976}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &311687903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 311687901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 3175052960
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1 &390880331
 GameObject:
   m_ObjectHideFlags: 0
@@ -2139,8 +2196,8 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   _squarePrefab: {fileID: 8792271614969082729, guid: 54d7bd9430cbde849b1af1dd9cb76ace, type: 3}
   _linePrefab: {fileID: 4956155871588204326, guid: 79120644d33b1eb468f640523224db62, type: 3}
-  _rows: 5
-  _cols: 8
+  _rows: 6
+  _cols: 12
   _baseTileSize: 1.5
   _maxGridWidth: 19
   _maxGridHeight: 10
@@ -2941,7 +2998,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1857748341}
+  - {fileID: 311687902}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1762962977
@@ -2959,7 +3016,8 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   _crossPrefab: {fileID: 2217084418646223755, guid: b1e0b7d7dac7d8c479998e7329f12173, type: 3}
   _circlePrefab: {fileID: 2217084418646223755, guid: 87b3caabbd23c1e47b0ab58663eb6262, type: 3}
-  poolHolder: {fileID: 1857748341}
+  _winLine: {fileID: 6357334984848537023, guid: b204c506dba54564189a88aff0826f11, type: 3}
+  poolHolder: {fileID: 311687902}
 --- !u!114 &1762962978
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3130,37 +3188,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 54d7bd9430cbde849b1af1dd9cb76ace, type: 3}
---- !u!1 &1857748340
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1857748341}
-  m_Layer: 0
-  m_Name: PoolHolder
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1857748341
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1857748340}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1762962976}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1871292229
 GameObject:
   m_ObjectHideFlags: 0
@@ -3498,6 +3525,10 @@ MonoBehaviour:
   currentPlayerType:
     m_InternalValue: 0
   _localPlayerType: 0
+  isGameOver:
+    m_InternalValue: 0
+  winner:
+    m_InternalValue: 0
 --- !u!4 &1910139972
 Transform:
   m_ObjectHideFlags: 0

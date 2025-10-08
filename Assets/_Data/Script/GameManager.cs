@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine.Serialization;
 
 public class GameManager : Singleton<GameManager>
@@ -32,13 +33,13 @@ public class GameManager : Singleton<GameManager>
         _playerTypesArray[x, y] = playerType;
         GameEvent.ClickedOnGridPosition(null, vtPos, vtScale, playerType);
 
-        EnumPlayerType winPlayerType = WinChecker.CheckWin(_playerTypesArray, x, y);
-       
-        if (winPlayerType != EnumPlayerType.None)
+        WinResult winPlayerType = WinChecker.CheckWin(_playerTypesArray, x, y);
+        if (winPlayerType.winner != EnumPlayerType.None)
         {
             Debug.Log("WIN OVER" + winPlayerType);
             isGameOver.Value = true;
-            winner.Value = winPlayerType;
+            winner.Value = winPlayerType.winner;
+            OnWinGame(winPlayerType);
             return;
         }
 
@@ -60,6 +61,11 @@ public class GameManager : Singleton<GameManager>
                 currentPlayerType.Value = EnumPlayerType.Cross;
                 break;
         }
+    }
+
+    protected virtual void OnWinGame(WinResult winResult)
+    {
+        GameEvent.WinGame(this,winResult);
     }
 
     public override void OnNetworkSpawn()

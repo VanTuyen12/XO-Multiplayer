@@ -1,7 +1,7 @@
 using UnityEditor.Rendering;
 using UnityEngine;
 
-public class GridPosition : MyNetWorkMonoBehaviour
+public class GridPosition : MonoBehaviour
 {
     [SerializeField] private int x;
 
