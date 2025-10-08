@@ -97,8 +97,8 @@ public static class WinChecker
     {
         var dir = end - start;
 
-        if (dir.x == 0) return EnumDirection.Horizontal;
-        if (dir.y == 0) return EnumDirection.Vertical;
+        if (dir.x == 0) return EnumDirection.Vertical;
+        if (dir.y == 0) return EnumDirection.Horizontal;
         
         return dir.x == dir.y ? EnumDirection.DiagonalDown : EnumDirection.DiagonalUp;
     }

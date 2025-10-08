@@ -50,7 +50,11 @@ public class GameManager : Singleton<GameManager>
             winner.Value = EnumPlayerType.None;
             return;
         }
-        
+
+        SwitchPlayer();
+    }
+    private void SwitchPlayer()
+    {
         switch (currentPlayerType.Value)
         {
             default:
@@ -62,7 +66,6 @@ public class GameManager : Singleton<GameManager>
                 break;
         }
     }
-
     protected virtual void OnWinGame(WinResult winResult)
     {
         GameEvent.WinGame(this,winResult);

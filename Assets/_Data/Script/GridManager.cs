@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Net.WebSockets;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -19,6 +20,8 @@ public class GridManager : Singleton<GridManager>
     [SerializeField] private float _actualTileSize;
     private float _scaleRatio;
     public float ScaleRatio => _scaleRatio;
+    
+    Dictionary<Vector2Int,Transform> _cellCache = new Dictionary<Vector2Int,Transform>();
     protected override void Start()
     {
         base.Start();
@@ -46,6 +49,7 @@ public class GridManager : Singleton<GridManager>
         {
             for (int col = 0; col < _cols; col++)
             {
+                
                 GameObject cell = Instantiate(_squarePrefab, transform);
 
                 float posX = col * _actualTileSize;
@@ -53,9 +57,10 @@ public class GridManager : Singleton<GridManager>
 
                 cell.transform.localPosition = new Vector2(posX, posY);
                 cell.name = $"square {row}_{col}";
-
+                _cellCache[new Vector2Int(row, col)] = cell.transform;
+                
                 SetGrid(cell, row, col);
-
+                
                 cell.transform.localScale = GetSquareSize();
             }
         }
@@ -135,16 +140,14 @@ public class GridManager : Singleton<GridManager>
         
         transform.localPosition = centerOffset;
     }
-
+    public Transform FindCell(int row, int col)
+    {
+        var key = new Vector2Int(row, col);
+        return _cellCache.TryGetValue(key, out var cell) ? cell : null;
+    }
     public Vector2 GetSquareSize()
     {
         return Vector3.one * (_actualTileSize/_baseTileSize);
-        
     }
-
-    public Transform FindCell(int row, int col)
-    {
-        string targetName = $"square {row}_{col}";
-        return GameObject.Find(targetName).transform;
-    }
+    
 }
