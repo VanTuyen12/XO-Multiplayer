@@ -22,15 +22,14 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
 
     private void GameEventOnWinGame(object obj, WinResult winResult)
     {
-        Debug.Log("========== WIN GAME OVER ===========");
-        //Debug.Log(winResult.posStart + " " + winResult.posEnd);
+        if (!NetworkManager.Singleton.IsServer) return;
+        
         if (GridManager.Instance == null) return;
-
         var startPos = new Vector2Int(winResult.posStart.x, winResult.posStart.y);
         var endPos = new Vector2Int(winResult.posEnd.x, winResult.posEnd.y);
         Transform cellStartPos = GridManager.Instance.FindCell(startPos.x, startPos.y);
         Transform cellEndPos = GridManager.Instance.FindCell(endPos.x, endPos.y);
-
+       
         var dir = cellEndPos.transform.position - cellStartPos.transform.position;
 
         var centerPos = (startPos + endPos) / 2;
@@ -38,7 +37,7 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
 
         float scaleRatio = GridManager.Instance.ScaleRatio;
         float angle = AngleLine(winResult.winDirection);
-        Vector3 lineLength = new Vector3(dir.magnitude * 0.8f, scaleRatio * 0.85f, 1);
+        Vector3 lineLength = new Vector3(dir.magnitude * 0.8f, scaleRatio * 0.6f, 1);
         
         SpawnWinLine(cellTargetPos.transform.position,angle,lineLength);
     }
@@ -60,9 +59,9 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
             case EnumDirection.Horizontal:
                 return 90;
             case EnumDirection.DiagonalDown:
-                return 135;
+                return 45;
             case EnumDirection.DiagonalUp:
-                return -135;
+                return -45;
         }
 
         return 0;

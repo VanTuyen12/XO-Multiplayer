@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -9,12 +10,19 @@ public enum EnumDirection
     DiagonalDown,
     DiagonalUp
 }
-public struct WinResult
+public struct WinResult : INetworkSerializable
 {
     public EnumPlayerType winner;
     public Vector2Int posStart;
     public Vector2Int posEnd;
     public EnumDirection winDirection;
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+    {
+        serializer.SerializeValue(ref winner);
+        serializer.SerializeValue(ref posStart);
+        serializer.SerializeValue(ref posEnd);
+        serializer.SerializeValue(ref winDirection);
+    }
 }
 
 public static class WinChecker

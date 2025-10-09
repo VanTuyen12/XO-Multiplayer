@@ -36,16 +36,14 @@ public class GameManager : Singleton<GameManager>
         WinResult winPlayerType = WinChecker.CheckWin(_playerTypesArray, x, y);
         if (winPlayerType.winner != EnumPlayerType.None)
         {
-            Debug.Log("WIN OVER" + winPlayerType);
             isGameOver.Value = true;
             winner.Value = winPlayerType.winner;
-            OnWinGame(winPlayerType);
+            OnWinGameRpc(winPlayerType);
             return;
         }
 
         if (WinChecker.IsBoardFull(_playerTypesArray))
         {
-            Debug.Log("Full OVER" + winPlayerType);
             isGameOver.Value = true;
             winner.Value = EnumPlayerType.None;
             return;
@@ -66,7 +64,9 @@ public class GameManager : Singleton<GameManager>
                 break;
         }
     }
-    protected virtual void OnWinGame(WinResult winResult)
+    
+    [Rpc(SendTo.ClientsAndHost)]
+    protected virtual void OnWinGameRpc(WinResult winResult)
     {
         GameEvent.WinGame(this,winResult);
     }
