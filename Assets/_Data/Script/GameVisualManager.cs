@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Mathematics;
 using Unity.Netcode;
@@ -12,12 +13,23 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
     [SerializeField] private Transform _circlePrefab;
     [SerializeField] private Transform _winLine;
     [SerializeField] private Transform poolHolder;
-
+    [SerializeField] private List<GameObject> _visualGameObjectList = new();
     protected override void Start()
     {
         base.Start();
         GameEvent.OnClickGridPosition += OnClickOnGridPosition;
         GameEvent.OnWinGame += GameEventOnWinGame;
+        GameEvent.OnRematch += GameEventOnRematch;
+    }
+
+    private void GameEventOnRematch(object sender, EventArgs e)
+    {
+        if (!NetworkManager.Singleton.IsServer) return;
+        foreach (var obj in _visualGameObjectList)
+        {
+            Destroy(obj);
+        }
+        _visualGameObjectList.Clear();
     }
 
     private void GameEventOnWinGame(object obj, WinResult winResult)
@@ -50,6 +62,7 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
         newWinLine.transform.localScale = lineLength;
         
         newWinLine.GetComponent<NetworkObject>().Spawn(true);
+        _visualGameObjectList.Add(newWinLine.gameObject);
     }
 
     private int AngleLine(EnumDirection dir)
@@ -59,11 +72,10 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
             case EnumDirection.Horizontal:
                 return 90;
             case EnumDirection.DiagonalDown:
-                return 45;
-            case EnumDirection.DiagonalUp:
                 return -45;
+            case EnumDirection.DiagonalUp:
+                return 45;
         }
-
         return 0;
     }
 
@@ -92,7 +104,6 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
     private void OnClickOnGridPosition(object sender, GameEvent.OnClickGridPositionEventArgs e)
     {
         //Debug.Log("OnClickOnGridPosition");
-
         Vector3 gridPos = e.vtPos;
         Vector3 gridScale = e.vtScale;
 
@@ -114,8 +125,10 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
 
         if (netObj.TrySetParent(poolHolder, false))
             newPrefab.transform.SetParent(poolHolder, false);
+        
+        _visualGameObjectList.Add(newPrefab.gameObject);
     }
-
+    
     protected virtual Transform SelectPrefab(EnumPlayerType playerType)
     {
         switch (playerType)
@@ -132,5 +145,7 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
     {
         GameEvent.OnClickGridPosition -= OnClickOnGridPosition;
         GameEvent.OnWinGame -= GameEventOnWinGame;
+        GameEvent.OnRematch -= GameEventOnRematch;
     }
+    
 }

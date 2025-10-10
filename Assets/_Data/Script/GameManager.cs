@@ -24,7 +24,6 @@ public class GameManager : Singleton<GameManager>
     public virtual void ClickedOnGridPositionRpc(int x, int y, Vector3 vtPos, Vector3 vtScale,
         EnumPlayerType playerType)
     {
-        //Debug.Log("ClickedOnGridPositionRpc");
         if (isGameOver.Value) return;
 
         if (playerType != currentPlayerType.Value) return;
@@ -46,11 +45,19 @@ public class GameManager : Singleton<GameManager>
         {
             isGameOver.Value = true;
             winner.Value = EnumPlayerType.None;
+            GameTiedRpc();
             return;
         }
 
         SwitchPlayer();
     }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    protected virtual void GameTiedRpc()
+    {
+        GameEvent.GameTied(this,EventArgs.Empty);
+    }
+    
     private void SwitchPlayer()
     {
         switch (currentPlayerType.Value)
@@ -71,6 +78,26 @@ public class GameManager : Singleton<GameManager>
         GameEvent.WinGame(this,winResult);
     }
 
+    [Rpc(SendTo.Server)]
+    public virtual void RematchRpc()
+    {
+        for (int i = 0; i < _playerTypesArray.GetLength(0); i++)
+        {
+            for (int j = 0; j < _playerTypesArray.GetLength(1); j++)
+            {
+                _playerTypesArray[i, j] = EnumPlayerType.None;
+            }
+        }
+        
+        currentPlayerType.Value = EnumPlayerType.Cross;
+        TriggerOnRematchRpc();
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    protected virtual void TriggerOnRematchRpc()
+    {
+        GameEvent.Rematch(this, EventArgs.Empty);
+    }
     public override void OnNetworkSpawn()
     {
         Debug.Log(NetworkManager.Singleton.LocalClientId);

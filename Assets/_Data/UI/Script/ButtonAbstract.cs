@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public abstract class ButtonAbstract : MyNetWorkMonoBehaviour
+public abstract class ButtonAbstract : MyMonoBehaviour
 {
     [SerializeField]protected Button _button;
     protected override void Start()

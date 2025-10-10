@@ -66,7 +66,7 @@ public class GridManager : Singleton<GridManager>
         }
     }
 
-    protected void SetGrid(GameObject obj, int row, int col)
+    private void SetGrid(GameObject obj, int row, int col)
     {
         var gridPos = obj.GetComponent<GridPosition>();
         

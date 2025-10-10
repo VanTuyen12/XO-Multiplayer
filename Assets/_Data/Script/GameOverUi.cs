@@ -1,24 +1,41 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
-public class GameOverUi : MonoBehaviour
+public class GameOverUi : MyMonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI resultTextMesh;
-    [SerializeField] private Color colorWin;
-    [SerializeField] private Color colorLoss;
+    [SerializeField] private Color winColor;
+    [SerializeField] private Color lossColer;
+    [SerializeField] private Color tiedColer;
+    
+    protected override void LoadComponents()
+    {
+        base.LoadComponents();
+        this.LoadResultTextMesh();
+    }
 
-    private void Awake()
+    protected virtual void LoadResultTextMesh()
     {
         if (resultTextMesh != null) return;
         resultTextMesh = transform.GetComponentInChildren<TextMeshProUGUI>();
-        
+        Debug.Log(transform.name + " :resultTextMesh.text ",gameObject);
     }
     
-    private void Start()
+    protected override void Start()
     {
         GameEvent.OnWinGame += GameEventOnWinGame;
+        GameEvent.OnTied += GameEventOnOnTied;
         Hide();
+    }
+
+    private void GameEventOnOnTied(object sender, EventArgs e)
+    {
+        resultTextMesh.text = "Game Tied!";
+        resultTextMesh.color = tiedColer;
+        Show();
     }
 
     private void GameEventOnWinGame(object sender, WinResult winResult)
@@ -26,12 +43,12 @@ public class GameOverUi : MonoBehaviour
         if (winResult.winner == GameManager.Instance.GetLocalPlayerType() )
         {
             resultTextMesh.text = "You win!";
-            resultTextMesh.color = colorWin;
+            resultTextMesh.color = winColor;
         }
         else
         {
             resultTextMesh.text = "You lose!";
-            resultTextMesh.color = colorLoss;
+            resultTextMesh.color = lossColer;
         }
         Show();
     }
@@ -44,5 +61,11 @@ public class GameOverUi : MonoBehaviour
     public virtual void Show()
     {
         gameObject.SetActive(true);
+    }
+
+    private void OnDestroy()
+    {
+        GameEvent.OnWinGame -= GameEventOnWinGame;
+        GameEvent.OnTied -= GameEventOnOnTied;
     }
 }

@@ -8,7 +8,8 @@ public class GameEvent : MyNetWorkMonoBehaviour
     public static event EventHandler<OnClickGridPositionEventArgs> OnClickGridPosition;
     public static event EventHandler OnGameStarted;
     public static event EventHandler OnCurrentPlayerChanged;
-
+    public static event EventHandler OnRematch;
+    public static event EventHandler OnTied; 
     public static event Action<object,WinResult> OnWinGame;
     public class OnClickGridPositionEventArgs : EventArgs
     {
@@ -40,6 +41,16 @@ public class GameEvent : MyNetWorkMonoBehaviour
     public static void WinGame(object sender,WinResult WinResult)
     {
         OnWinGame?.Invoke(sender, WinResult);
+    }
+
+    public static void Rematch(object sender,EventArgs e)
+    {
+        OnRematch?.Invoke(sender, e);
+    }
+    
+    public static void GameTied(object sender,EventArgs e)
+    {
+        OnTied?.Invoke(sender, e);
     }
 }
 
