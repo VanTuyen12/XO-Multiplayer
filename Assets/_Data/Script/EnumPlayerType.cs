@@ -5,4 +5,5 @@ public enum EnumPlayerType
     None,
     Cross,
     Circle,
+    WinLine,
 }

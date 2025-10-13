@@ -12,7 +12,10 @@ public class GameManager : Singleton<GameManager>
 
     //Game Over
     [SerializeField] private NetworkVariable<bool> isGameOver = new(false);
-    [SerializeField] private NetworkVariable<EnumPlayerType> winner = new(EnumPlayerType.None);
+    
+    //Score Player
+    [SerializeField] private NetworkVariable<int> scoreCrossPlayer = new(0);
+    [SerializeField] private NetworkVariable<int> scoreCirclePlayer = new(0);
 
     public EnumPlayerType[,] PlayerTypesArray
     {
@@ -36,7 +39,7 @@ public class GameManager : Singleton<GameManager>
         if (winPlayerType.winner != EnumPlayerType.None)
         {
             isGameOver.Value = true;
-            winner.Value = winPlayerType.winner;
+            SetScorePlayer(winPlayerType.winner);
             OnWinGameRpc(winPlayerType);
             return;
         }
@@ -44,7 +47,6 @@ public class GameManager : Singleton<GameManager>
         if (WinChecker.IsBoardFull(_playerTypesArray))
         {
             isGameOver.Value = true;
-            winner.Value = EnumPlayerType.None;
             GameTiedRpc();
             return;
         }
@@ -52,6 +54,18 @@ public class GameManager : Singleton<GameManager>
         SwitchPlayer();
     }
 
+    protected virtual void SetScorePlayer(EnumPlayerType playerType)
+    {
+        switch (playerType)
+        {
+            case EnumPlayerType.Cross :
+                scoreCrossPlayer.Value++;
+                break;
+            case EnumPlayerType.Circle:
+                scoreCirclePlayer.Value++;
+                break;
+        }
+    }
     [Rpc(SendTo.ClientsAndHost)]
     protected virtual void GameTiedRpc()
     {
@@ -81,6 +95,8 @@ public class GameManager : Singleton<GameManager>
     [Rpc(SendTo.Server)]
     public virtual void RematchRpc()
     {
+        isGameOver.Value = false;
+        
         for (int i = 0; i < _playerTypesArray.GetLength(0); i++)
         {
             for (int j = 0; j < _playerTypesArray.GetLength(1); j++)
@@ -100,7 +116,7 @@ public class GameManager : Singleton<GameManager>
     }
     public override void OnNetworkSpawn()
     {
-        Debug.Log(NetworkManager.Singleton.LocalClientId);
+        //Debug.Log(NetworkManager.Singleton.LocalClientId);
         _localPlayerType = NetworkManager.Singleton.LocalClientId == 0 ? EnumPlayerType.Cross : EnumPlayerType.Circle;
 
         if (IsServer)
@@ -111,6 +127,16 @@ public class GameManager : Singleton<GameManager>
         currentPlayerType.OnValueChanged += (oldPlayerType, newPlayerType) =>
         {
             GameEvent.PlayOnCurrentPlayerChanged(this, EventArgs.Empty);
+        };
+
+        scoreCrossPlayer.OnValueChanged += (prevScore, newScore) =>
+        {
+            GameEvent.ScoreChanged(this,EventArgs.Empty);
+        };
+        
+        scoreCirclePlayer.OnValueChanged += (prevScore, newScore) =>
+        {
+            GameEvent.ScoreChanged(this,EventArgs.Empty);
         };
     }
 
@@ -127,6 +153,11 @@ public class GameManager : Singleton<GameManager>
         GameEvent.PlayOnGameStarted(this, EventArgs.Empty);
     }
 
+    public virtual void GetScore(out int scoreCross, out int scoreCircle)
+    {
+        scoreCross = scoreCrossPlayer.Value;
+        scoreCircle = scoreCirclePlayer.Value;
+    }
     public virtual EnumPlayerType GetLocalPlayerType()
     {
         return _localPlayerType;

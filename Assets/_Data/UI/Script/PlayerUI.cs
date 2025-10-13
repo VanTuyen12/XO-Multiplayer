@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 
 public class PlayerUI : MyNetWorkMonoBehaviour
@@ -8,6 +9,9 @@ public class PlayerUI : MyNetWorkMonoBehaviour
     
     [SerializeField] private GameObject circleYouText;
     [SerializeField] private GameObject circleArrowImage;
+    
+    [SerializeField] private ScoreCrossTextUi scoreCrossText;
+    [SerializeField] private ScoreCircleTextUi scoreCircleText;
 
     protected override void Awake()
     {
@@ -15,11 +19,54 @@ public class PlayerUI : MyNetWorkMonoBehaviour
         LoadStartPlayGame();
     }
 
+    protected override void LoadComponents()
+    {
+        base.LoadComponents();
+        this.LoadGameObjetStart();
+        this.LoadScoreTextUi();
+    }
+
+    protected virtual void LoadGameObjetStart()
+    {
+        if (crossYouText!= null) return;
+        crossYouText = transform.Find("CrossYouTxt").gameObject;
+
+        if (crossArrowImage != null) return;
+        crossArrowImage = transform.Find("CrossArrowImage").gameObject;
+        
+        if (circleYouText!= null) return;
+        circleYouText = transform.Find("CircleYouTxt").gameObject;
+
+        if (circleArrowImage != null) return;
+        circleArrowImage = transform.Find("CircleArrowImage").gameObject;
+        
+        Debug.Log(transform.name+ ":LoadGameObjetStart",gameObject);
+    }
+
+    protected virtual void LoadScoreTextUi()
+    {
+        if (scoreCrossText != null) return;
+        scoreCrossText = GetComponentInChildren<ScoreCrossTextUi>();
+
+        if (scoreCircleText != null) return;
+        scoreCircleText = GetComponentInChildren<ScoreCircleTextUi>();
+        
+        Debug.Log(transform.name+ ":ScoreTextUi",gameObject);
+    }
+
     protected override void Start()
     {
         base.Start();
         GameEvent.OnGameStarted += GameEvent_OnGameStarted;
         GameEvent.OnCurrentPlayerChanged += GameEventOnOnCurrentPlayerChanged;
+        GameEvent.OnScoreChanged += GameEventOnScoreChanged;
+    }
+
+    private void GameEventOnScoreChanged(object sender, EventArgs e)
+    {
+        GameManager.Instance.GetScore(out int scoreCross, out int scoreCircle);
+        scoreCircleText.ScoreCircleText(scoreCircle);
+        scoreCrossText.ScoreCrossText(scoreCross);
     }
 
     protected virtual void GameEventOnOnCurrentPlayerChanged(object sender, EventArgs e)
@@ -37,7 +84,10 @@ public class PlayerUI : MyNetWorkMonoBehaviour
         {
             circleYouText.SetActive(true);
         }
-
+        
+        scoreCircleText.ScoreCircleText(0);
+        scoreCrossText.ScoreCrossText(0);
+        
         UpdateCurrentArrow();
     }
 
@@ -61,5 +111,12 @@ public class PlayerUI : MyNetWorkMonoBehaviour
         circleYouText.SetActive(false);
         circleArrowImage.SetActive(false);
         crossArrowImage.SetActive(false);
+    }
+
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+        GameEvent.OnGameStarted -= GameEvent_OnGameStarted;
+        GameEvent.OnCurrentPlayerChanged -= GameEventOnOnCurrentPlayerChanged;
     }
 }

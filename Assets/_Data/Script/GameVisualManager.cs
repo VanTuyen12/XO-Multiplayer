@@ -9,11 +9,9 @@ using UnityEngine.Serialization;
 
 public class GameVisualManager : MyNetWorkMonoBehaviour
 {
-    [SerializeField] private Transform _crossPrefab;
-    [SerializeField] private Transform _circlePrefab;
-    [SerializeField] private Transform _winLine;
-    [SerializeField] private Transform poolHolder;
+    
     [SerializeField] private List<GameObject> _visualGameObjectList = new();
+    [SerializeField] protected GameObjectSpawner gameObjectSpawner;
     protected override void Start()
     {
         base.Start();
@@ -56,6 +54,7 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
 
     protected virtual void SpawnWinLine(Vector3 winLinePos,float angle,Vector3 lineLength)
     {
+        Transform _winLine = gameObjectSpawner.PoolPrefabs.GetByName(EnumPlayerType.WinLine.ToString()).transform;
         var newWinLine = Instantiate(_winLine);
         newWinLine.transform.localPosition = winLinePos ;
         newWinLine.transform.localRotation = Quaternion.Euler(0, 0, angle);
@@ -83,22 +82,14 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
     protected override void LoadComponents()
     {
         base.LoadComponents();
-        this.LoadPooHolder();
+        this.LoadGameObjectSpawner();
     }
 
-    protected virtual void LoadPooHolder()
+    protected virtual void LoadGameObjectSpawner()
     {
-        if (poolHolder != null) return;
-        poolHolder = transform.Find("PoolHolder") ??
-                     new GameObject("PoolHolder").transform;
-
-        if (poolHolder.transform.parent != this.transform)
-            poolHolder.transform.SetParent(this.transform);
-
-        if (!poolHolder.GetComponent<NetworkObject>())
-            poolHolder.AddComponent<NetworkObject>();
-
-        Debug.Log(transform.name + " :LoadPoolHolder", gameObject);
+        if (gameObjectSpawner != null) return;
+        gameObjectSpawner = GetComponent<GameObjectSpawner>();
+        Debug.Log(transform.name + " :LoadGameObjectSpawner", gameObject);
     }
 
     private void OnClickOnGridPosition(object sender, GameEvent.OnClickGridPositionEventArgs e)
@@ -114,34 +105,33 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
     protected virtual void SpawnPrefabsRpc(Vector3 gridPos, Vector3 gridScale, EnumPlayerType playerType)
     {
         //Debug.Log("SpawnObject");
-        Transform prefab = SelectPrefab(playerType);
+        var prefab = SelectPrefab(playerType);
 
-        var newPrefab = Instantiate(prefab);
+        var newPrefab = gameObjectSpawner.Spawn(prefab);
         newPrefab.transform.localPosition = gridPos;
         newPrefab.transform.localScale = gridScale;
 
         var netObj = newPrefab.GetComponent<NetworkObject>();
         netObj.Spawn(true);
-
-        if (netObj.TrySetParent(poolHolder, false))
-            newPrefab.transform.SetParent(poolHolder, false);
         
         _visualGameObjectList.Add(newPrefab.gameObject);
     }
     
-    protected virtual Transform SelectPrefab(EnumPlayerType playerType)
+    protected virtual ObjectPrefabsCtrl SelectPrefab(EnumPlayerType playerType)
     {
+        var prefab = gameObjectSpawner.PoolPrefabs.GetByName(playerType.ToString());
         switch (playerType)
         {
             default:
             case EnumPlayerType.Cross:
-                return _crossPrefab;
+                    return (CrossCtrl)prefab;
             case EnumPlayerType.Circle:
-                return _circlePrefab;
+                    return (CircleCtrl)prefab;
         }
+       
     }
 
-    private void OnDisable()
+    public override void OnDestroy()
     {
         GameEvent.OnClickGridPosition -= OnClickOnGridPosition;
         GameEvent.OnWinGame -= GameEventOnWinGame;

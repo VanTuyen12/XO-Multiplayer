@@ -10,8 +10,6 @@ public class GridPosition : MonoBehaviour
 
     private void OnMouseDown()
     {
-        //Debug.Log("Click " + gameObject.name);
-
         var gameManager = GameManager.Instance;
         if (gameManager == null) return;
 
