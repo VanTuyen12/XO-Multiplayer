@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class PoolObj : MyMonoBehaviour
+public abstract class PoolObj : MyNetWorkMonoBehaviour
 {
     protected override void LoadComponents()
     {

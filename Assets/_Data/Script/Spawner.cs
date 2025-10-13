@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 
-public abstract class Spawner<T> : MyMonoBehaviour where T : PoolObj
+public abstract class Spawner<T> : MyNetWorkMonoBehaviour where T : PoolObj
 {
     private int spawnCount = 0;
     
@@ -16,6 +16,7 @@ public abstract class Spawner<T> : MyMonoBehaviour where T : PoolObj
     public virtual T Spawn(T prefab, Vector3 position)
     {
         T newPrefab = Spawn(prefab);
+        newPrefab.SetActive(true);
         newPrefab.transform.position = position;
         
         return newPrefab;
@@ -56,9 +57,9 @@ public abstract class Spawner<T> : MyMonoBehaviour where T : PoolObj
 
     public void Despawn(T objToDespawn)
     {
-        if (objToDespawn is MonoBehaviour monoBehaviour)
+        if (objToDespawn is NetworkBehaviour networkBehaviour)
         {
-            monoBehaviour.gameObject.SetActive(false);
+            networkBehaviour.gameObject.SetActive(false);
             AddObjectToPool(objToDespawn);
         }
     }
@@ -96,12 +97,8 @@ public abstract class Spawner<T> : MyMonoBehaviour where T : PoolObj
         if (poolHolder.transform.parent != this.transform)
             poolHolder.transform.SetParent(this.transform);
         
-        if (!poolHolder.GetComponent<NetworkObject>())
-           poolHolder.gameObject.AddComponent<NetworkObject>();
-        
-        var poolHolderNetworkObj = poolHolder.GetComponent<NetworkObject>();
-        if (!poolHolderNetworkObj.IsSpawned)
-            poolHolderNetworkObj.Spawn(true);
+        /*if (!poolHolder.GetComponent<NetworkObject>())
+           poolHolder.gameObject.AddComponent<NetworkObject>();*/
        
         Debug.Log(transform.name + ":LoadPoolHolder",gameObject);
     }

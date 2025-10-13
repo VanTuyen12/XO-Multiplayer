@@ -54,8 +54,12 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
 
     protected virtual void SpawnWinLine(Vector3 winLinePos,float angle,Vector3 lineLength)
     {
-        Transform _winLine = gameObjectSpawner.PoolPrefabs.GetByName(EnumPlayerType.WinLine.ToString()).transform;
-        var newWinLine = Instantiate(_winLine);
+        var winLine =gameObjectSpawner.PoolPrefabs.GetByName(EnumPlayerType.WinLine.ToString());
+        if (winLine == null) Debug.Log(transform.name+" :NULL winLine");
+        var newWinLine =  gameObjectSpawner.Spawn(winLine);
+        if (newWinLine == null) Debug.Log(transform.name+" :NULL newWinLine");
+        newWinLine.SetActive(true);
+        
         newWinLine.transform.localPosition = winLinePos ;
         newWinLine.transform.localRotation = Quaternion.Euler(0, 0, angle);
         newWinLine.transform.localScale = lineLength;
@@ -106,8 +110,12 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
     {
         //Debug.Log("SpawnObject");
         var prefab = SelectPrefab(playerType);
-
+        if (prefab == null) Debug.Log(transform.name+" :NULL prefab");
+        
         var newPrefab = gameObjectSpawner.Spawn(prefab);
+        if (newPrefab == null) Debug.Log(transform.name+" :NULL newPrefab");
+        
+        newPrefab.SetActive(true);
         newPrefab.transform.localPosition = gridPos;
         newPrefab.transform.localScale = gridScale;
 
@@ -117,9 +125,9 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
         _visualGameObjectList.Add(newPrefab.gameObject);
     }
     
-    protected virtual ObjectPrefabsCtrl SelectPrefab(EnumPlayerType playerType)
+    /*protected virtual void SpawnPrefab(EnumPlayerType playerType)
     {
-        var prefab = gameObjectSpawner.PoolPrefabs.GetByName(playerType.ToString());
+        var prefab = SelectPrefab(playerType);
         switch (playerType)
         {
             default:
@@ -129,8 +137,12 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
                     return (CircleCtrl)prefab;
         }
        
+    }*/
+    protected virtual ObjectPrefabsCtrl SelectPrefab(EnumPlayerType playerType)
+    {
+       return gameObjectSpawner.PoolPrefabs.GetByName(playerType.ToString());
+       
     }
-
     public override void OnDestroy()
     {
         GameEvent.OnClickGridPosition -= OnClickOnGridPosition;

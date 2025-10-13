@@ -1,4 +1,4 @@
-public class PoolHolder: MyMonoBehaviour
+public class PoolHolder: MyNetWorkMonoBehaviour
 {
         
 }

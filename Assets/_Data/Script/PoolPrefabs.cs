@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public abstract class PoolPrefabs<T> : MyMonoBehaviour where T : MonoBehaviour
+public abstract class PoolPrefabs<T> : MyNetWorkMonoBehaviour where T : NetworkBehaviour
 {
     [SerializeField] protected List<T> poolPrefabs = new();
 
