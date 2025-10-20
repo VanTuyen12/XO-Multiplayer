@@ -9,9 +9,9 @@ using UnityEngine.Serialization;
 
 public class GameVisualManager : MyNetWorkMonoBehaviour
 {
-    
-    [SerializeField] private List<GameObject> _visualGameObjectList = new();
     [SerializeField] protected GameObjectSpawner gameObjectSpawner;
+    [SerializeField] private List<ObjectPrefabsCtrl> _visualGameObjectList = new();
+   
     protected override void Start()
     {
         base.Start();
@@ -22,14 +22,34 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
 
     private void GameEventOnRematch(object sender, EventArgs e)
     {
-        if (!NetworkManager.Singleton.IsServer) return;
+        if (IsServer)
+        {
+            ResetPrefabsRpc();
+        }
+        else
+        {
+            RequestRematchRpc();
+        }
+    }
+    
+    [Rpc(SendTo.Server)]
+    private void RequestRematchRpc()
+    {
+        Debug.Log("RequestRematchRpc()");
+        ResetPrefabsRpc();
+    }
+    
+    [Rpc(SendTo.Everyone)]
+    protected virtual void ResetPrefabsRpc()
+    {
+        Debug.Log($"[ResetPrefabsRpc] Called on {(IsServer ? "Server" : "Client")}");
         foreach (var obj in _visualGameObjectList)
         {
-            Destroy(obj);
+            obj.Despawn.DoDespawn();
         }
         _visualGameObjectList.Clear();
+        
     }
-
     private void GameEventOnWinGame(object obj, WinResult winResult)
     {
         if (!NetworkManager.Singleton.IsServer) return;
@@ -55,17 +75,14 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
     protected virtual void SpawnWinLine(Vector3 winLinePos,float angle,Vector3 lineLength)
     {
         var winLine =gameObjectSpawner.PoolPrefabs.GetByName(EnumPlayerType.WinLine.ToString());
-        if (winLine == null) Debug.Log(transform.name+" :NULL winLine");
         var newWinLine =  gameObjectSpawner.Spawn(winLine);
-        if (newWinLine == null) Debug.Log(transform.name+" :NULL newWinLine");
-        newWinLine.SetActive(true);
-        
         newWinLine.transform.localPosition = winLinePos ;
         newWinLine.transform.localRotation = Quaternion.Euler(0, 0, angle);
         newWinLine.transform.localScale = lineLength;
         
         newWinLine.GetComponent<NetworkObject>().Spawn(true);
-        _visualGameObjectList.Add(newWinLine.gameObject);
+        gameObjectSpawner.SetParent(newWinLine);
+        _visualGameObjectList.Add(newWinLine);
     }
 
     private int AngleLine(EnumDirection dir)
@@ -103,6 +120,7 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
         Vector3 gridScale = e.vtScale;
 
         SpawnPrefabsRpc(gridPos, gridScale, e.playerType);
+        
     }
 
     [Rpc(SendTo.Server)]
@@ -110,34 +128,25 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
     {
         //Debug.Log("SpawnObject");
         var prefab = SelectPrefab(playerType);
-        if (prefab == null) Debug.Log(transform.name+" :NULL prefab");
+        var newPrefab = gameObjectSpawner.Spawn(prefab,gridPos);
         
-        var newPrefab = gameObjectSpawner.Spawn(prefab);
-        if (newPrefab == null) Debug.Log(transform.name+" :NULL newPrefab");
-        
-        newPrefab.SetActive(true);
         newPrefab.transform.localPosition = gridPos;
         newPrefab.transform.localScale = gridScale;
-
+        
         var netObj = newPrefab.GetComponent<NetworkObject>();
         netObj.Spawn(true);
         
-        _visualGameObjectList.Add(newPrefab.gameObject);
+        TriggerOnPlacedObjectRpc();
+        
+        gameObjectSpawner.SetParent(newPrefab);
+        _visualGameObjectList.Add(newPrefab);
     }
-    
-    /*protected virtual void SpawnPrefab(EnumPlayerType playerType)
+
+    [Rpc(SendTo.ClientsAndHost)]
+    protected virtual void TriggerOnPlacedObjectRpc()
     {
-        var prefab = SelectPrefab(playerType);
-        switch (playerType)
-        {
-            default:
-            case EnumPlayerType.Cross:
-                    return (CrossCtrl)prefab;
-            case EnumPlayerType.Circle:
-                    return (CircleCtrl)prefab;
-        }
-       
-    }*/
+        GameEvent.PlacedObject(this, EventArgs.Empty);
+    }
     protected virtual ObjectPrefabsCtrl SelectPrefab(EnumPlayerType playerType)
     {
        return gameObjectSpawner.PoolPrefabs.GetByName(playerType.ToString());
@@ -149,5 +158,4 @@ public class GameVisualManager : MyNetWorkMonoBehaviour
         GameEvent.OnWinGame -= GameEventOnWinGame;
         GameEvent.OnRematch -= GameEventOnRematch;
     }
-    
 }

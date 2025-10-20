@@ -10,9 +10,11 @@ public class GameEvent : MyNetWorkMonoBehaviour
     public static event EventHandler OnCurrentPlayerChanged;
     public static event EventHandler OnRematch;
     public static event EventHandler OnTied;
-    public static event EventHandler OnScoreChanged; 
+    public static event EventHandler OnScoreChanged;
+    public static event EventHandler OnPlacedObject; 
     public static event Action<object,WinResult> OnWinGame;
    
+    
     public class OnClickGridPositionEventArgs : EventArgs
     {
         public Vector3 vtPos;
@@ -57,6 +59,11 @@ public class GameEvent : MyNetWorkMonoBehaviour
     public static void ScoreChanged(object sender,EventArgs e)
     {
         OnScoreChanged?.Invoke(sender, e);
+    }
+    
+    public static void PlacedObject(object sender,EventArgs e)
+    {
+        OnPlacedObject?.Invoke(sender, e);
     }
 }
 

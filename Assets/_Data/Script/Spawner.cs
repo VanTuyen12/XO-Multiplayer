@@ -7,6 +7,7 @@ public abstract class Spawner<T> : MyNetWorkMonoBehaviour where T : PoolObj
     private int spawnCount = 0;
     
     [SerializeField]protected PoolHolder poolHolder;
+    public PoolHolder PoolHolder => poolHolder;
 
     [SerializeField] protected PoolPrefabs<T> poolPrefabs;
     public PoolPrefabs<T> PoolPrefabs => poolPrefabs;
@@ -16,7 +17,7 @@ public abstract class Spawner<T> : MyNetWorkMonoBehaviour where T : PoolObj
     public virtual T Spawn(T prefab, Vector3 position)
     {
         T newPrefab = Spawn(prefab);
-        newPrefab.SetActive(true);
+        if (newPrefab == null) return null;
         newPrefab.transform.position = position;
         
         return newPrefab;
@@ -24,19 +25,24 @@ public abstract class Spawner<T> : MyNetWorkMonoBehaviour where T : PoolObj
 
     public virtual T Spawn(T prefab)
     {
+        if (prefab == null) return null;
         T newPrefab = GetObjFromPool(prefab);
+        
+        
         if (newPrefab == null)
         {
             newPrefab = Instantiate(prefab);
             spawnCount++;
             UpdateNamePrefabs(newPrefab,prefab);
         }
-
-        if (poolHolder != null) newPrefab.transform.SetParent(poolHolder.transform); 
-        
+        if(newPrefab != null) newPrefab.SetActive(true);
         return newPrefab;
     }
 
+    public virtual void SetParent(T prefab)
+    {
+        if (poolHolder != null) prefab.transform.SetParent(poolHolder.transform); 
+    }
     protected virtual void UpdateNamePrefabs(T newPrefab, T prefab)
     {
         newPrefab.name = prefab.name + " _ "+ spawnCount;   
@@ -55,6 +61,13 @@ public abstract class Spawner<T> : MyNetWorkMonoBehaviour where T : PoolObj
         return null;
     }
 
+    /*public virtual void SetPrefabsHooder(T prefab)
+    {
+        foreach (var obj in poolHolder.transform)
+        {
+            obj.
+        }
+    } */
     public void Despawn(T objToDespawn)
     {
         if (objToDespawn is NetworkBehaviour networkBehaviour)
